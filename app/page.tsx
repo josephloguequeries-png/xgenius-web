@@ -1,461 +1,345 @@
-const edgeBoard = [
+import AnalyticsPageView from "@/components/analytics-page-view";
+import HomeHeroActions from "@/components/home-hero-actions";
+import MarketTable from "@/components/market-table";
+import MetricCard from "@/components/metric-card";
+import ModelDecisionCard from "@/components/model-decision-card";
+import PageShell from "@/components/page-shell";
+import PricingCard from "@/components/pricing-card";
+import RotatingBrandSignal from "@/components/rotating-brand-signal";
+import SectionHeader from "@/components/section-header";
+
+const homeRows = [
   {
-    match: "Man City vs Aston Villa",
-    market: "Man City to Win",
-    price: "1.82",
-    fair: "1.68",
-    edge: "+8.3%",
-    confidence: "High",
+    fixture: "Man City vs Aston Villa",
+    market: "Home Win",
+    modelProbability: "58.4%",
+    fairOdds: "1.71",
+    bestPrice: "1.82",
+    ev: "+6.4%",
+    riskLabel: "Lineups pending",
+    riskLevel: "medium" as const,
+    decision: "Watch" as const,
   },
   {
-    match: "Arsenal vs Newcastle",
+    fixture: "Arsenal vs Newcastle",
     market: "Over 2.5 Goals",
-    price: "1.91",
-    fair: "1.76",
-    edge: "+7.9%",
-    confidence: "Medium",
+    modelProbability: "52.1%",
+    fairOdds: "1.92",
+    bestPrice: "1.83",
+    ev: "-4.7%",
+    riskLabel: "Price short",
+    riskLevel: "high" as const,
+    decision: "No Bet" as const,
   },
   {
-    match: "Inter vs AC Milan",
-    market: "BTTS — Yes",
-    price: "1.74",
-    fair: "1.63",
-    edge: "+6.7%",
-    confidence: "Medium",
-  },
-];
-
-const featureCards = [
-  {
-    label: "01",
-    title: "Fair odds engine",
-    text: "Convert model probabilities into a clean price so users can see whether the market is overpaying or underpaying.",
-  },
-  {
-    label: "02",
-    title: "EV-first recommendations",
-    text: "Every pick is judged by expected value, not vibes, fan bias or bookmaker headline odds.",
-  },
-  {
-    label: "03",
-    title: "Risk flags before staking",
-    text: "Lineups, rotation, market drift, low-liquidity leagues and fragile bet-builder legs are surfaced clearly.",
-  },
-  {
-    label: "04",
-    title: "Transparent results",
-    text: "Timestamped picks, closing-line value and performance by market keep the product honest.",
+    fixture: "Inter vs Milan",
+    market: "BTTS Yes",
+    modelProbability: "56.8%",
+    fairOdds: "1.76",
+    bestPrice: "1.91",
+    ev: "+8.5%",
+    riskLabel: "Derby volatility",
+    riskLevel: "medium" as const,
+    decision: "Qualified" as const,
   },
 ];
 
-const pricing = [
+const pricingPlans = [
   {
-    name: "Free",
-    price: "£0",
-    text: "For users testing the model.",
-    bullets: ["Limited edge board", "Delayed results", "Basic model notes"],
-    cta: "Join free",
-    featured: false,
+    name: "Basic",
+    price: "£5.99",
+    summary: "Core model view for disciplined weekly checks.",
+    included: [
+      "Daily model snapshot",
+      "Limited edge board access",
+      "Core markets only (1X2, O/U 2.5, BTTS)",
+      "Weekly results summary",
+    ],
+    excluded: [
+      "Full edge board",
+      "Full results ledger",
+      "CLV tracking",
+      "Extended markets, player stats, and 150+ competitions",
+    ],
   },
   {
     name: "Premium",
-    price: "£24.99",
-    text: "The core xGenius subscription.",
-    bullets: ["Full daily edge board", "Fair odds & EV", "Risk flags", "Results archive"],
-    cta: "Start free trial",
+    price: "£19.99",
+    summary: "Full edge workflow with extended markets and player-level context.",
+    included: [
+      "Full edge board access",
+      "Data across 150+ competitions",
+      "Extended betting markets coverage",
+      "Individual player statistics view",
+      "Fair odds and EV view",
+      "Match-level model breakdowns",
+      "Full results ledger",
+    ],
+    excluded: ["CLV tracking", "Advanced workflow filters"],
     featured: true,
+    badge: "Most Popular",
   },
   {
-    name: "Pro",
-    price: "£59.99",
-    text: "For advanced bettors and analysts.",
-    bullets: ["CLV dashboard", "Custom filters", "Bankroll tracker", "Early line alerts"],
-    cta: "Join waitlist",
-    featured: false,
+    name: "Professional",
+    price: "£49.99",
+    summary: "Power-user execution tier with advanced monitoring and workflow controls.",
+    included: [
+      "Everything in Premium",
+      "CLV tracking",
+      "Price movement alerts",
+      "Advanced filters",
+      "Enhanced results analytics",
+      "Priority access to new features",
+      "Deep workflow tools across 150+ competitions",
+    ],
   },
 ];
 
-function Logo() {
-  return (
-    <div className="logo" aria-label="xGenius">
-      <div className="logo-mark">
-        <svg viewBox="0 0 120 86" role="img">
-          <defs>
-            <linearGradient id="logoMint" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor="#54ffd5" />
-              <stop offset="100%" stopColor="#0ec99a" />
-            </linearGradient>
-            <linearGradient id="logoBlue" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor="#2fe1ff" />
-              <stop offset="100%" stopColor="#166bff" />
-            </linearGradient>
-          </defs>
-
-          <path
-            d="M8 14h25l17 20 19-20h24L64 43l31 30H69L50 54 31 73H7l30-30L8 14Z"
-            fill="url(#logoMint)"
-          />
-          <path
-            d="M60 12h47v18H77c-11 0-18 6-18 15s7 15 18 15h14v-9H76V37h33v37H76c-24 0-40-12-40-30 0-17 13-32 24-32Z"
-            fill="url(#logoBlue)"
-          />
-          <path
-            d="M15 68 40 43l18 12 37-38"
-            fill="none"
-            stroke="#64ffd8"
-            strokeWidth="6"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <path
-            d="M89 18h15v15"
-            fill="none"
-            stroke="#64ffd8"
-            strokeWidth="6"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <circle cx="40" cy="43" r="5" fill="#06101f" stroke="#64ffd8" strokeWidth="4" />
-          <circle cx="58" cy="55" r="5" fill="#06101f" stroke="#64ffd8" strokeWidth="4" />
-        </svg>
-      </div>
-      <span>
-        <strong>x</strong>Genius
-      </span>
-    </div>
-  );
-}
-
-function MiniLogo() {
-  return (
-    <div className="mini-logo" aria-hidden="true">
-      <Logo />
-    </div>
-  );
-}
-
-function DashboardMockup() {
-  return (
-    <div className="terminal-card">
-      <div className="terminal-top">
-        <MiniLogo />
-        <div className="terminal-tabs">
-          <span className="active">Edge Board</span>
-          <span>Matches</span>
-          <span>Model</span>
-          <span>Results</span>
-        </div>
-        <div className="user-dot">JG</div>
-      </div>
-
-      <div className="terminal-grid">
-        <div className="panel edge-panel">
-          <div className="panel-head">
-            <div>
-              <p className="eyebrow">Live model slate</p>
-              <h3>Today&apos;s strongest edges</h3>
-            </div>
-            <span className="live-pill">Live</span>
-          </div>
-
-          <div className="edge-list">
-            {edgeBoard.map((row) => (
-              <article className="edge-item" key={row.match}>
-                <div>
-                  <h4>{row.match}</h4>
-                  <p>{row.market}</p>
-                </div>
-                <div className="edge-price">
-                  <span>{row.price}</span>
-                  <strong>{row.edge}</strong>
-                </div>
-              </article>
-            ))}
-          </div>
-        </div>
-
-        <div className="panel probability-panel">
-          <p className="eyebrow">Probability split</p>
-          <h3>Man City vs Aston Villa</h3>
-          <div className="prob-bars">
-            <div>
-              <span>Home</span>
-              <i style={{ width: "58%" }} />
-              <strong>58%</strong>
-            </div>
-            <div>
-              <span>Draw</span>
-              <i style={{ width: "23%" }} />
-              <strong>23%</strong>
-            </div>
-            <div>
-              <span>Away</span>
-              <i style={{ width: "19%" }} />
-              <strong>19%</strong>
-            </div>
-          </div>
-        </div>
-
-        <div className="panel chart-panel">
-          <div className="panel-head">
-            <div>
-              <p className="eyebrow">xG trend</p>
-              <h3>Last 10 matches</h3>
-            </div>
-            <span className="muted-mini">xG For / Against</span>
-          </div>
-          <svg viewBox="0 0 420 190" className="line-chart">
-            <path d="M20 160H400M20 120H400M20 80H400M20 40H400" stroke="rgba(255,255,255,0.08)" />
-            <path
-              d="M26 118 C58 140,82 62,114 86 S172 148,210 90 S282 32,314 72 S360 138,398 52"
-              fill="none"
-              stroke="#54ffd5"
-              strokeWidth="5"
-            />
-            <path
-              d="M26 142 C70 94,94 152,134 120 S198 52,238 104 S306 150,336 118 S370 70,398 95"
-              fill="none"
-              stroke="#166bff"
-              strokeWidth="5"
-            />
-            {[26, 114, 210, 314, 398].map((x, i) => (
-              <circle key={x} cx={x} cy={[118, 86, 90, 72, 52][i]} r="6" fill="#54ffd5" />
-            ))}
-          </svg>
-        </div>
-
-        <div className="panel pick-panel">
-          <p className="eyebrow">Recommended pick</p>
-          <h3>Man City to Win</h3>
-          <div className="pick-stats">
-            <div>
-              <span>Market</span>
-              <strong>1.82</strong>
-            </div>
-            <div>
-              <span>Fair</span>
-              <strong>1.68</strong>
-            </div>
-            <div>
-              <span>EV</span>
-              <strong>+8.3%</strong>
-            </div>
-          </div>
-          <div className="confidence">
-            <span>Model confidence</span>
-            <div>
-              <i />
-            </div>
-            <strong>78%</strong>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function FeatureIcon({ number }: { number: string }) {
-  return (
-    <div className="feature-number">
-      <span>{number}</span>
-    </div>
-  );
-}
-
 export default function Home() {
   return (
-    <main>
-      <div className="background-grid" />
+    <PageShell navMode="home">
+      <AnalyticsPageView page="/" />
+      <section className="hero-section terminal-hero">
+        <div className="hero-left">
+          <div className="hero-copy">
+            <p className="terminal-kicker">Model-led football market intelligence</p>
+            <h1>
+              Price the game.
+              <br />
+              <em>Don&apos;t chase it.</em>
+            </h1>
+            <p>
+              xGenie turns football market data, model probability and risk context into clear pricing intelligence.
+            </p>
 
-      <header className="site-nav">
-        <Logo />
-        <nav>
-          <a href="#features">Features</a>
-          <a href="#model">Model</a>
-          <a href="#pricing">Pricing</a>
-          <a href="#results">Results</a>
-        </nav>
-        <a href="#pricing" className="nav-button">
-          Join beta
-        </a>
-      </header>
-
-      <section className="hero-section">
-        <div className="hero-copy">
-          <div className="status-pill">
-            <span />
-            Model-led football betting intelligence
+            <HomeHeroActions />
           </div>
 
-          <h1>
-            Price the game.
-            <br />
-            <em>Don&apos;t chase it.</em>
-          </h1>
-
-          <p>
-            xGenius turns football data into market probabilities, fair odds, EV signals and risk-aware recommendations — built for bettors who care about price, process and proof.
-          </p>
-
-          <div className="hero-actions">
-            <a className="primary-action" href="#pricing">
-              Start free trial
-            </a>
-            <a className="secondary-action" href="#model">
-              View sample model
-            </a>
+          <div className="hero-metrics sample-metrics">
+            <MetricCard label="Qualified EV" value="+4.2%" trend="Average across accepted picks" />
+            <MetricCard label="No Bet rate" value="41%" trend="When price or risk gates fail" />
+            <MetricCard label="Tracked CLV" value="+1.7%" trend="Rolling 90-day sample" />
           </div>
 
-          <div className="hero-metrics">
-            <div>
-              <strong>+8.3%</strong>
-              <span>Sample EV edge</span>
+          <article className="edge-curve-card model-edge-card">
+            <p className="section-label">Model edge curve</p>
+            <h3>Signal path from raw price to decision</h3>
+            <p className="edge-curve-desc">Sample signal path showing how xGenie moves from raw market price to qualified decision.</p>
+
+            <div className="edge-curve-chart" aria-label="Model edge curve sample chart">
+              <svg viewBox="0 0 540 164" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+                <defs>
+                  <linearGradient id="edgeFill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#00d6f3" stopOpacity="0.18" />
+                    <stop offset="100%" stopColor="#00d6f3" stopOpacity="0.01" />
+                  </linearGradient>
+                </defs>
+
+                <line x1="50" y1="18" x2="490" y2="18" className="edge-grid-line" />
+                <line x1="50" y1="44" x2="490" y2="44" className="edge-grid-line" />
+                <line x1="50" y1="70" x2="490" y2="70" className="edge-grid-line" strokeDasharray="4 4" />
+                <line x1="50" y1="96" x2="490" y2="96" className="edge-grid-line" />
+                <line x1="50" y1="122" x2="490" y2="122" className="edge-grid-line" />
+
+                <text x="44" y="21" className="edge-axis-label" textAnchor="end">+8%</text>
+                <text x="44" y="47" className="edge-axis-label" textAnchor="end">+6%</text>
+                <text x="44" y="73" className="edge-axis-label edge-threshold-label" textAnchor="end">+4%</text>
+                <text x="44" y="99" className="edge-axis-label" textAnchor="end">+2%</text>
+                <text x="44" y="125" className="edge-axis-label" textAnchor="end">0%</text>
+
+                <text x="496" y="68" className="edge-threshold-annotation">threshold</text>
+
+                <polygon points="50,98 160,80 270,50 380,70 490,40 490,122 50,122" fill="url(#edgeFill)" />
+
+                <polyline points="50,98 160,80 270,50 380,70 490,40" className="edge-line" fill="none" />
+
+                <circle cx="50" cy="98" r="4" className="edge-node" />
+                <circle cx="160" cy="80" r="4" className="edge-node" />
+                <circle cx="270" cy="50" r="4" className="edge-node" />
+                <circle cx="380" cy="70" r="4" className="edge-node" />
+                <circle cx="490" cy="40" r="5" className="edge-node edge-node-final" />
+
+                <text x="50" y="92" className="edge-value-label" textAnchor="middle">+1.8%</text>
+                <text x="160" y="74" className="edge-value-label" textAnchor="middle">+3.2%</text>
+                <text x="270" y="44" className="edge-value-label" textAnchor="middle">+5.6%</text>
+                <text x="380" y="64" className="edge-value-label" textAnchor="middle">+4.1%</text>
+                <text x="490" y="34" className="edge-value-label edge-value-final" textAnchor="middle">+6.4%</text>
+
+                <text x="50" y="142" className="edge-axis-label" textAnchor="middle">Opening</text>
+                <text x="160" y="142" className="edge-axis-label" textAnchor="middle">Drift</text>
+                <text x="270" y="142" className="edge-axis-label" textAnchor="middle">Reprice</text>
+                <text x="380" y="142" className="edge-axis-label" textAnchor="middle">Risk</text>
+                <text x="490" y="142" className="edge-axis-label edge-label-final" textAnchor="middle">Qualified</text>
+              </svg>
             </div>
-            <div>
-              <strong>1.68</strong>
-              <span>Model fair price</span>
-            </div>
-            <div>
-              <strong>CLV</strong>
-              <span>Tracked post-pick</span>
-            </div>
-          </div>
+
+            <dl className="edge-curve-stats">
+              <div>
+                <dt>Edge threshold</dt>
+                <dd>+4.0%</dd>
+              </div>
+              <div>
+                <dt>Sample edge</dt>
+                <dd className="positive">+6.4%</dd>
+              </div>
+              <div>
+                <dt>Status</dt>
+                <dd>
+                  <span className="decision-badge qualified">Qualified</span>
+                </dd>
+              </div>
+              <div>
+                <dt>Risk state</dt>
+                <dd>
+                  <span className="decision-badge watch">Watch</span>
+                </dd>
+              </div>
+            </dl>
+
+            <p className="edge-curve-footer">Sample data only. Live model outputs use fixture, market and odds data.</p>
+          </article>
         </div>
 
-        <DashboardMockup />
-      </section>
+        <div className="hero-right">
+          <RotatingBrandSignal />
 
-      <section className="trust-strip" aria-label="xGenius principles">
-        <span>Fair odds</span>
-        <span>EV first</span>
-        <span>No-bet discipline</span>
-        <span>Risk flags</span>
-        <span>Transparent results</span>
+          <div className="terminal-card terminal-table-card">
+            <SectionHeader
+              eyebrow="Live board snapshot"
+              title="Current market qualification view"
+              description="Prices and decisions are examples of xGenie workflow output."
+            />
+            <MarketTable rows={homeRows} />
+          </div>
+
+          <article className="model-objective-card">
+            <p className="section-label">Model objective</p>
+            <h3>Built to identify value. Also built to say no.</h3>
+            <p>
+              xGenie converts team strength, chance creation, market movement and risk context into fair odds, then compares
+              against bookmaker lines to identify where price and edge align.
+            </p>
+
+            <div className="model-objective-grid">
+              <div className="model-feature">
+                <p className="model-feature-label">Probability engine</p>
+                <p className="model-feature-copy">Estimates true outcome probability across core football markets.</p>
+              </div>
+              <div className="model-feature">
+                <p className="model-feature-label">Fair odds conversion</p>
+                <p className="model-feature-copy">Turns model probability into a minimum acceptable price.</p>
+              </div>
+              <div className="model-feature">
+                <p className="model-feature-label">Risk filter</p>
+                <p className="model-feature-copy">Flags lineup uncertainty, volatility, weak liquidity and fragile markets.</p>
+              </div>
+              <div className="model-feature">
+                <p className="model-feature-label">No-bet discipline</p>
+                <p className="model-feature-copy">Rejects markets where price, risk or confidence fails the threshold.</p>
+              </div>
+            </div>
+
+            <div className="model-pills" aria-label="Model output descriptors">
+              <span className="model-pill">1X2 / O-U 2.5 / BTTS</span>
+              <span className="model-pill">EV / Fair price / Risk</span>
+              <span className="model-pill">Qualified / Watch / No Bet</span>
+            </div>
+          </article>
+        </div>
       </section>
 
       <section id="features" className="content-section">
-        <div className="section-head">
-          <p className="section-label">What the product does</p>
-          <h2>A football model interface that explains the price, not just the pick.</h2>
-        </div>
+        <SectionHeader
+          eyebrow="Decision architecture"
+          title="Structured for pricing discipline, not volume betting"
+          description="Each recommendation passes valuation, minimum price, and risk controls before reaching the edge board."
+        />
 
-        <div className="feature-grid">
-          {featureCards.map((card) => (
-            <article className="feature-card" key={card.title}>
-              <FeatureIcon number={card.label} />
-              <h3>{card.title}</h3>
-              <p>{card.text}</p>
-            </article>
-          ))}
+        <div className="content-card-grid">
+          <article className="content-card">
+            <h3>Fair odds engine</h3>
+            <p>Model probabilities are converted into fair odds before comparing against bookmaker prices.</p>
+          </article>
+          <article className="content-card">
+            <h3>Expected value filter</h3>
+            <p>Markets below EV threshold stay out of the board even if team-level narrative looks attractive.</p>
+          </article>
+          <article className="content-card">
+            <h3>Risk flagging</h3>
+            <p>Lineup uncertainty, market drift, and liquidity concerns are surfaced before any staking decision.</p>
+          </article>
+          <article className="content-card">
+            <h3>Transparent records</h3>
+            <p>Accepted and rejected opportunities are logged with timestamped pricing context.</p>
+          </article>
         </div>
       </section>
 
-      <section id="model" className="content-section model-section">
-        <div className="section-head">
-          <p className="section-label">Sample model output</p>
-          <h2>Every recommendation should be auditable before kick-off.</h2>
-        </div>
+      <section id="model" className="content-section">
+        <SectionHeader
+          eyebrow="Model decisions"
+          title="Recommendations include rationale and execution boundaries"
+          description="No Bet is a valid model output when risk or price conditions are not met."
+        />
 
-        <div className="model-output">
-          <div className="model-match">
-            <span>Premier League · Today 17:30</span>
-            <h3>Man City vs Aston Villa</h3>
-            <p>
-              Model view: City project above baseline attacking output, Villa carry transition threat, but the 1X2 price still clears the minimum value threshold.
-            </p>
-          </div>
-
-          <div className="model-table">
-            <div className="table-row head">
-              <span>Market</span>
-              <span>Market</span>
-              <span>Fair</span>
-              <span>EV</span>
-            </div>
-            {[
-              ["Man City Win", "1.82", "1.68", "+8.3%"],
-              ["Over 2.5", "1.91", "1.79", "+6.7%"],
-              ["BTTS Yes", "1.74", "1.66", "+4.8%"],
-            ].map((row) => (
-              <div className="table-row" key={row[0]}>
-                <span>{row[0]}</span>
-                <span>{row[1]}</span>
-                <span>{row[2]}</span>
-                <strong>{row[3]}</strong>
-              </div>
-            ))}
-          </div>
-
-          <div className="risk-box">
-            <h4>Risk flags</h4>
-            <div>
-              <span>Lineups unconfirmed</span>
-              <span>Price valid ≥ 1.78</span>
-              <span>0.5u max stake</span>
-              <span>No accumulator boost</span>
-            </div>
-          </div>
+        <div className="decision-grid">
+          <ModelDecisionCard
+            fixture="Premier League · Sat 17:30"
+            market="Man City Win"
+            modelProbability="58.4%"
+            fairOdds="1.71"
+            bestPrice="1.82"
+            ev="+6.4%"
+            minimumPrice="1.78"
+            riskLabel="Lineups pending"
+            riskLevel="medium"
+            decision="Bet"
+            rationale="Price clears minimum threshold and EV remains positive after risk adjustments."
+          />
+          <ModelDecisionCard
+            fixture="Serie A · Sun 19:45"
+            market="BTTS Yes"
+            modelProbability="57.1%"
+            fairOdds="1.75"
+            bestPrice="1.74"
+            ev="-0.6%"
+            minimumPrice="1.80"
+            riskLabel="Derby volatility"
+            riskLevel="high"
+            decision="No Bet"
+            rationale="Offered price fails minimum gate and volatility profile increases downside variance."
+          />
         </div>
       </section>
 
       <section id="pricing" className="content-section">
-        <div className="section-head">
-          <p className="section-label">Pricing</p>
-          <h2>Start lean. Upgrade when the model earns your trust.</h2>
-        </div>
+        <SectionHeader
+          eyebrow="Pricing"
+          title="Choose your market intelligence tier"
+          description="Start with a lightweight view of the model, then upgrade for full boards, tracking and advanced workflow tools."
+        />
+        <p className="pricing-note">All plans billed monthly. Cancel anytime.</p>
 
         <div className="pricing-grid">
-          {pricing.map((plan) => (
-            <article className={plan.featured ? "pricing-card featured" : "pricing-card"} key={plan.name}>
-              {plan.featured && <span className="plan-badge">Most useful</span>}
-              <h3>{plan.name}</h3>
-              <p>{plan.text}</p>
-              <div className="plan-price">
-                {plan.price}
-                <span>/mo</span>
-              </div>
-              <ul>
-                {plan.bullets.map((bullet) => (
-                  <li key={bullet}>{bullet}</li>
-                ))}
-              </ul>
-              <a href="#">{plan.cta}</a>
-            </article>
+          {pricingPlans.map((plan) => (
+            <PricingCard key={plan.name} {...plan} />
           ))}
         </div>
       </section>
 
       <section id="results" className="results-band">
-        <div>
-          <p className="section-label">Responsible positioning</p>
-          <h2>Built to show restraint.</h2>
-          <p>
-            xGenius should recommend fewer, better-qualified positions — and clearly show when the correct answer is no bet.
-          </p>
-        </div>
+        <SectionHeader
+          eyebrow="Results policy"
+          title="Transparent reporting with no deleted losses"
+          description="Performance reporting is process-first: CLV, ROI, drawdown, and market-level attribution remain visible."
+        />
+
         <div className="results-stats">
-          <div>
-            <strong>No deleted losses</strong>
-            <span>Timestamped archive</span>
-          </div>
-          <div>
-            <strong>CLV tracked</strong>
-            <span>Process over variance</span>
-          </div>
-          <div>
-            <strong>18+</strong>
-            <span>Informational only</span>
-          </div>
+          <MetricCard label="Tracked picks" value="1,284" trend="All timestamped" />
+          <MetricCard label="CLV vs close" value="+1.7%" trend="Rolling 90-day" />
+          <MetricCard label="Loss policy" value="0 deletions" trend="Full audit trail" />
         </div>
       </section>
-
-      <footer className="site-footer">
-        <Logo />
-        <p>
-          xGenius is an informational analytics product. No prediction is guaranteed. Betting involves financial risk. Only bet what you can afford to lose.
-        </p>
-        <span>© 2026 xGenius. All rights reserved.</span>
-      </footer>
-    </main>
+    </PageShell>
   );
 }
