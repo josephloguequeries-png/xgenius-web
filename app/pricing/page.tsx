@@ -1,6 +1,7 @@
 import AnalyticsPageView from "@/components/analytics-page-view";
 import PageShell from "@/components/page-shell";
 import PricingCard from "@/components/pricing-card";
+import RevealOnScroll from "@/components/RevealOnScroll";
 import SectionHeader from "@/components/section-header";
 
 const plans = [
@@ -58,27 +59,33 @@ export default function PricingPage() {
   return (
     <PageShell>
       <AnalyticsPageView page="/pricing" />
+
       <section className="marketing-hero">
         <p className="section-label">Pricing</p>
-        <h1>Choose your market intelligence tier</h1>
+        <h1>Choose your xGenie workspace tier</h1>
         <p>
-          Start with a lightweight view of the model, then upgrade for full boards, tracking and advanced workflow tools.
+          Plans scale from lightweight market checks to full terminal workflow coverage, while maintaining the same
+          model-led, risk-adjusted decision framework.
         </p>
       </section>
 
-      <section className="marketing-section">
+      <RevealOnScroll>
+        <section className="marketing-section workspace-section">
         <SectionHeader
           eyebrow="Plan comparison"
-          title="Choose by analysis needs"
-          description="All tiers follow the same responsible product policy with no guaranteed profit claims."
+          title="Pick the workflow depth you need"
+          description="All plans follow responsible product policy with no guaranteed outcome claims."
         />
 
         <div className="pricing-grid">
-          {plans.map((plan) => (
-            <PricingCard key={plan.name} {...plan} />
+          {plans.map((plan, index) => (
+            <RevealOnScroll key={plan.name} delay={index * 80}>
+              <PricingCard {...plan} />
+            </RevealOnScroll>
           ))}
         </div>
-      </section>
+        </section>
+      </RevealOnScroll>
     </PageShell>
   );
 }

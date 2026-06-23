@@ -1,46 +1,42 @@
 import AnalyticsPageView from "@/components/analytics-page-view";
+import BetHistoryPreview from "@/components/BetHistoryPreview";
 import HomeHeroActions from "@/components/home-hero-actions";
-import MarketTable from "@/components/market-table";
-import MetricCard from "@/components/metric-card";
-import ModelDecisionCard from "@/components/model-decision-card";
+import MarketCoverageGrid from "@/components/MarketCoverageGrid";
+import ModelWorkflowSteps from "@/components/ModelWorkflowSteps";
 import PageShell from "@/components/page-shell";
 import PricingCard from "@/components/pricing-card";
+import ProductModuleCard from "@/components/ProductModuleCard";
+import RevealOnScroll from "@/components/RevealOnScroll";
 import RotatingBrandSignal from "@/components/rotating-brand-signal";
 import SectionHeader from "@/components/section-header";
+import SimulationPreview from "@/components/SimulationPreview";
+import TerminalWorkspacePreview from "@/components/TerminalWorkspacePreview";
+import WaitlistForm from "@/components/waitlist-form";
 
-const homeRows = [
+const productModules = [
   {
-    fixture: "Man City vs Aston Villa",
-    market: "Home Win",
-    modelProbability: "58.4%",
-    fairOdds: "1.71",
-    bestPrice: "1.82",
-    ev: "+6.4%",
-    riskLabel: "Lineups pending",
-    riskLevel: "medium" as const,
-    decision: "Watch" as const,
+    title: "Edge board",
+    description: "Ranked opportunities by fair price gap, EV profile and execution readiness.",
   },
   {
-    fixture: "Arsenal vs Newcastle",
-    market: "Over 2.5 Goals",
-    modelProbability: "52.1%",
-    fairOdds: "1.92",
-    bestPrice: "1.83",
-    ev: "-4.7%",
-    riskLabel: "Price short",
-    riskLevel: "high" as const,
-    decision: "No Bet" as const,
+    title: "Fixture intelligence",
+    description: "Match context, market setup and key inputs collected in one panel.",
   },
   {
-    fixture: "Inter vs Milan",
-    market: "BTTS Yes",
-    modelProbability: "56.8%",
-    fairOdds: "1.76",
-    bestPrice: "1.91",
-    ev: "+8.5%",
-    riskLabel: "Derby volatility",
-    riskLevel: "medium" as const,
-    decision: "Qualified" as const,
+    title: "Risk flags",
+    description: "Lineups, volatility and liquidity context surfaced before any bet decision.",
+  },
+  {
+    title: "No-bet discipline",
+    description: "Systematic rejection of low-quality prices to protect process integrity.",
+  },
+  {
+    title: "Results tracking",
+    description: "Structured history designed for auditability instead of selective reporting.",
+  },
+  {
+    title: "CLV tracking",
+    description: "Measure whether your process is beating market closes over time.",
   },
 ];
 
@@ -99,247 +95,127 @@ export default function Home() {
   return (
     <PageShell navMode="home">
       <AnalyticsPageView page="/" />
-      <section className="hero-section terminal-hero">
-        <div className="hero-left">
-          <div className="hero-copy">
-            <p className="terminal-kicker">Model-led football market intelligence</p>
-            <h1>
-              Price the game.
-              <br />
-              <em>Don&apos;t chase it.</em>
-            </h1>
-            <p>
-              xGenie turns football market data, model probability and risk context into clear pricing intelligence.
-            </p>
 
-            <HomeHeroActions />
-          </div>
-
-          <div className="hero-metrics sample-metrics">
-            <MetricCard label="Qualified EV" value="+4.2%" trend="Average across accepted picks" />
-            <MetricCard label="No Bet rate" value="41%" trend="When price or risk gates fail" />
-            <MetricCard label="Tracked CLV" value="+1.7%" trend="Rolling 90-day sample" />
-          </div>
-
-          <article className="edge-curve-card model-edge-card">
-            <p className="section-label">Model edge curve</p>
-            <h3>Signal path from raw price to decision</h3>
-            <p className="edge-curve-desc">Sample signal path showing how xGenie moves from raw market price to qualified decision.</p>
-
-            <div className="edge-curve-chart" aria-label="Model edge curve sample chart">
-              <svg viewBox="0 0 540 164" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
-                <defs>
-                  <linearGradient id="edgeFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#00d6f3" stopOpacity="0.18" />
-                    <stop offset="100%" stopColor="#00d6f3" stopOpacity="0.01" />
-                  </linearGradient>
-                </defs>
-
-                <line x1="50" y1="18" x2="490" y2="18" className="edge-grid-line" />
-                <line x1="50" y1="44" x2="490" y2="44" className="edge-grid-line" />
-                <line x1="50" y1="70" x2="490" y2="70" className="edge-grid-line" strokeDasharray="4 4" />
-                <line x1="50" y1="96" x2="490" y2="96" className="edge-grid-line" />
-                <line x1="50" y1="122" x2="490" y2="122" className="edge-grid-line" />
-
-                <text x="44" y="21" className="edge-axis-label" textAnchor="end">+8%</text>
-                <text x="44" y="47" className="edge-axis-label" textAnchor="end">+6%</text>
-                <text x="44" y="73" className="edge-axis-label edge-threshold-label" textAnchor="end">+4%</text>
-                <text x="44" y="99" className="edge-axis-label" textAnchor="end">+2%</text>
-                <text x="44" y="125" className="edge-axis-label" textAnchor="end">0%</text>
-
-                <text x="496" y="68" className="edge-threshold-annotation">threshold</text>
-
-                <polygon points="50,98 160,80 270,50 380,70 490,40 490,122 50,122" fill="url(#edgeFill)" />
-
-                <polyline points="50,98 160,80 270,50 380,70 490,40" className="edge-line" fill="none" />
-
-                <circle cx="50" cy="98" r="4" className="edge-node" />
-                <circle cx="160" cy="80" r="4" className="edge-node" />
-                <circle cx="270" cy="50" r="4" className="edge-node" />
-                <circle cx="380" cy="70" r="4" className="edge-node" />
-                <circle cx="490" cy="40" r="5" className="edge-node edge-node-final" />
-
-                <text x="50" y="92" className="edge-value-label" textAnchor="middle">+1.8%</text>
-                <text x="160" y="74" className="edge-value-label" textAnchor="middle">+3.2%</text>
-                <text x="270" y="44" className="edge-value-label" textAnchor="middle">+5.6%</text>
-                <text x="380" y="64" className="edge-value-label" textAnchor="middle">+4.1%</text>
-                <text x="490" y="34" className="edge-value-label edge-value-final" textAnchor="middle">+6.4%</text>
-
-                <text x="50" y="142" className="edge-axis-label" textAnchor="middle">Opening</text>
-                <text x="160" y="142" className="edge-axis-label" textAnchor="middle">Drift</text>
-                <text x="270" y="142" className="edge-axis-label" textAnchor="middle">Reprice</text>
-                <text x="380" y="142" className="edge-axis-label" textAnchor="middle">Risk</text>
-                <text x="490" y="142" className="edge-axis-label edge-label-final" textAnchor="middle">Qualified</text>
-              </svg>
-            </div>
-
-            <dl className="edge-curve-stats">
-              <div>
-                <dt>Edge threshold</dt>
-                <dd>+4.0%</dd>
-              </div>
-              <div>
-                <dt>Sample edge</dt>
-                <dd className="positive">+6.4%</dd>
-              </div>
-              <div>
-                <dt>Status</dt>
-                <dd>
-                  <span className="decision-badge qualified">Qualified</span>
-                </dd>
-              </div>
-              <div>
-                <dt>Risk state</dt>
-                <dd>
-                  <span className="decision-badge watch">Watch</span>
-                </dd>
-              </div>
-            </dl>
-
-            <p className="edge-curve-footer">Sample data only. Live model outputs use fixture, market and odds data.</p>
-          </article>
-        </div>
-
-        <div className="hero-right">
+      <section className="terminal-home-hero">
+        <div className="hero-copy">
+          <p className="terminal-kicker">Football market intelligence, built like a terminal.</p>
+          <h1>
+            Price the game.
+            <br />
+            <em>Don&apos;t chase it.</em>
+          </h1>
+          <p>
+            xGenie turns fixture data, model probability, market price and risk context into clear football betting
+            decisions.
+          </p>
+          <HomeHeroActions />
           <RotatingBrandSignal />
-
-          <div className="terminal-card terminal-table-card">
-            <SectionHeader
-              eyebrow="Live board snapshot"
-              title="Current market qualification view"
-              description="Prices and decisions are examples of xGenie workflow output."
-            />
-            <MarketTable rows={homeRows} />
-          </div>
-
-          <article className="model-objective-card">
-            <p className="section-label">Model objective</p>
-            <h3>Built to identify value. Also built to say no.</h3>
-            <p>
-              xGenie converts team strength, chance creation, market movement and risk context into fair odds, then compares
-              against bookmaker lines to identify where price and edge align.
-            </p>
-
-            <div className="model-objective-grid">
-              <div className="model-feature">
-                <p className="model-feature-label">Probability engine</p>
-                <p className="model-feature-copy">Estimates true outcome probability across core football markets.</p>
-              </div>
-              <div className="model-feature">
-                <p className="model-feature-label">Fair odds conversion</p>
-                <p className="model-feature-copy">Turns model probability into a minimum acceptable price.</p>
-              </div>
-              <div className="model-feature">
-                <p className="model-feature-label">Risk filter</p>
-                <p className="model-feature-copy">Flags lineup uncertainty, volatility, weak liquidity and fragile markets.</p>
-              </div>
-              <div className="model-feature">
-                <p className="model-feature-label">No-bet discipline</p>
-                <p className="model-feature-copy">Rejects markets where price, risk or confidence fails the threshold.</p>
-              </div>
-            </div>
-
-            <div className="model-pills" aria-label="Model output descriptors">
-              <span className="model-pill">1X2 / O-U 2.5 / BTTS</span>
-              <span className="model-pill">EV / Fair price / Risk</span>
-              <span className="model-pill">Qualified / Watch / No Bet</span>
-            </div>
-          </article>
         </div>
+
+        <TerminalWorkspacePreview />
       </section>
 
-      <section id="features" className="content-section">
+      <RevealOnScroll>
+        <section className="content-section workspace-section">
         <SectionHeader
-          eyebrow="Decision architecture"
-          title="Structured for pricing discipline, not volume betting"
-          description="Each recommendation passes valuation, minimum price, and risk controls before reaching the edge board."
+          eyebrow="Product workspace"
+          title="One workspace for football market decisions"
+          description="xGenie is designed as a decision-support terminal, with pricing, risk and rationale visible in one view."
         />
-
-        <div className="content-card-grid">
-          <article className="content-card">
-            <h3>Fair odds engine</h3>
-            <p>Model probabilities are converted into fair odds before comparing against bookmaker prices.</p>
-          </article>
-          <article className="content-card">
-            <h3>Expected value filter</h3>
-            <p>Markets below EV threshold stay out of the board even if team-level narrative looks attractive.</p>
-          </article>
-          <article className="content-card">
-            <h3>Risk flagging</h3>
-            <p>Lineup uncertainty, market drift, and liquidity concerns are surfaced before any staking decision.</p>
-          </article>
-          <article className="content-card">
-            <h3>Transparent records</h3>
-            <p>Accepted and rejected opportunities are logged with timestamped pricing context.</p>
-          </article>
+        <div className="workspace-module-grid">
+          {productModules.map((module, index) => (
+            <RevealOnScroll key={module.title} delay={index * 80}>
+              <ProductModuleCard title={module.title} description={module.description} />
+            </RevealOnScroll>
+          ))}
         </div>
-      </section>
+        </section>
+      </RevealOnScroll>
 
-      <section id="model" className="content-section">
+      <RevealOnScroll>
+        <section className="content-section workspace-section">
         <SectionHeader
-          eyebrow="Model decisions"
-          title="Recommendations include rationale and execution boundaries"
-          description="No Bet is a valid model output when risk or price conditions are not met."
+          eyebrow="Market coverage"
+          title="Built around the markets that matter first"
+          description="xGenie starts with high-liquidity football markets before expanding into more fragile props."
         />
+        <MarketCoverageGrid />
+        </section>
+      </RevealOnScroll>
 
-        <div className="decision-grid">
-          <ModelDecisionCard
-            fixture="Premier League · Sat 17:30"
-            market="Man City Win"
-            modelProbability="58.4%"
-            fairOdds="1.71"
-            bestPrice="1.82"
-            ev="+6.4%"
-            minimumPrice="1.78"
-            riskLabel="Lineups pending"
-            riskLevel="medium"
-            decision="Bet"
-            rationale="Price clears minimum threshold and EV remains positive after risk adjustments."
-          />
-          <ModelDecisionCard
-            fixture="Serie A · Sun 19:45"
-            market="BTTS Yes"
-            modelProbability="57.1%"
-            fairOdds="1.75"
-            bestPrice="1.74"
-            ev="-0.6%"
-            minimumPrice="1.80"
-            riskLabel="Derby volatility"
-            riskLevel="high"
-            decision="No Bet"
-            rationale="Offered price fails minimum gate and volatility profile increases downside variance."
-          />
-        </div>
-      </section>
+      <RevealOnScroll>
+        <section className="content-section workspace-section">
+        <SectionHeader
+          eyebrow="Model workflow"
+          title="From market price to decision"
+          description="Each step is tracked so users can understand why a market is qualified, watched, or rejected."
+        />
+        <ModelWorkflowSteps />
+        </section>
+      </RevealOnScroll>
 
-      <section id="pricing" className="content-section">
+      <RevealOnScroll>
+        <section className="content-section workspace-section">
+        <SectionHeader
+          eyebrow="Future feature preview"
+          title="Your betting record, in market context"
+          description="Future xGenie tools will let users analyse their betting history by market, price, closing-line movement, risk profile and result quality."
+        />
+        <BetHistoryPreview />
+        </section>
+      </RevealOnScroll>
+
+      <RevealOnScroll>
+        <section className="content-section workspace-section">
+        <SectionHeader
+          eyebrow="Discipline simulation"
+          title="Stress-test the process before scaling it"
+          description="Sample outputs show drawdown preview, no-bet rate and variance context. These are examples only, not performance claims."
+        />
+        <SimulationPreview />
+        </section>
+      </RevealOnScroll>
+
+      <RevealOnScroll>
+        <section className="content-section workspace-section">
         <SectionHeader
           eyebrow="Pricing"
           title="Choose your market intelligence tier"
           description="Start with a lightweight view of the model, then upgrade for full boards, tracking and advanced workflow tools."
         />
-        <p className="pricing-note">All plans billed monthly. Cancel anytime.</p>
-
         <div className="pricing-grid">
-          {pricingPlans.map((plan) => (
-            <PricingCard key={plan.name} {...plan} />
+          {pricingPlans.map((plan, index) => (
+            <RevealOnScroll key={plan.name} delay={index * 80}>
+              <PricingCard {...plan} />
+            </RevealOnScroll>
           ))}
         </div>
-      </section>
+        </section>
+      </RevealOnScroll>
 
-      <section id="results" className="results-band">
+      <RevealOnScroll>
+        <section className="content-section workspace-section">
         <SectionHeader
-          eyebrow="Results policy"
-          title="Transparent reporting with no deleted losses"
-          description="Performance reporting is process-first: CLV, ROI, drawdown, and market-level attribution remain visible."
+          eyebrow="Waitlist"
+          title="Join the xGenie rollout queue"
+          description="Sample model workspace - live outputs coming later. Join the waitlist for phased access updates."
         />
-
-        <div className="results-stats">
-          <MetricCard label="Tracked picks" value="1,284" trend="All timestamped" />
-          <MetricCard label="CLV vs close" value="+1.7%" trend="Rolling 90-day" />
-          <MetricCard label="Loss policy" value="0 deletions" trend="Full audit trail" />
+        <div className="waitlist-home-grid">
+          <WaitlistForm />
+          <article className="workspace-panel">
+            <header className="workspace-panel-header">
+              <p className="panel-kicker">Preview access notes</p>
+              <h3>What to expect next</h3>
+            </header>
+            <ul className="preview-note-list">
+              <li>Edge board modules arrive in staged beta waves.</li>
+              <li>Model workflow and risk queue evolve with user feedback.</li>
+              <li>All outputs remain decision support with no guaranteed outcomes.</li>
+            </ul>
+          </article>
         </div>
-      </section>
+        </section>
+      </RevealOnScroll>
     </PageShell>
   );
 }

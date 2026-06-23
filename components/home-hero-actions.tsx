@@ -20,7 +20,7 @@ export default function HomeHeroActions() {
       eventName: "cta_click",
       page: "/",
       metadata: {
-        label: "Review model process",
+        label: "View model process",
         location: "homepage_hero",
       },
     });
@@ -29,7 +29,7 @@ export default function HomeHeroActions() {
       eventName: "model_page_click",
       page: "/",
       metadata: {
-        label: "Review model process",
+        label: "View model process",
         location: "homepage_hero",
       },
     });
@@ -41,7 +41,7 @@ export default function HomeHeroActions() {
         Join waitlist
       </Link>
       <Link className="secondary-action" href="/model" onClick={handleReviewModelClick}>
-        Review model process
+        View model process
       </Link>
     </div>
   );
