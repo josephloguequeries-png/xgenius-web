@@ -1,130 +1,67 @@
 import AnalyticsPageView from "@/components/analytics-page-view";
+import DecisionEnginePanel from "@/components/DecisionEnginePanel";
 import MarketTable from "@/components/market-table";
-import ModelDecisionCard from "@/components/model-decision-card";
+import MatchIntelligencePanel from "@/components/MatchIntelligencePanel";
+import ModelWorkflowSteps from "@/components/ModelWorkflowSteps";
 import PageShell from "@/components/page-shell";
+import RevealOnScroll from "@/components/RevealOnScroll";
 import SectionHeader from "@/components/section-header";
+import { selectedWorkspaceFixture, workspaceFixtures } from "@/lib/sample-model-data";
 
-const processRows = [
-  {
-    fixture: "Man City vs Aston Villa",
-    market: "Man City Win",
-    modelProbability: "58.4%",
-    fairOdds: "1.71",
-    bestPrice: "1.82",
-    ev: "+6.4%",
-    riskLabel: "Lineups pending",
-    riskLevel: "medium" as const,
-    decision: "Bet" as const,
-  },
-  {
-    fixture: "Arsenal vs Newcastle",
-    market: "Over 2.5 Goals",
-    modelProbability: "54.3%",
-    fairOdds: "1.84",
-    bestPrice: "1.91",
-    ev: "+3.8%",
-    riskLabel: "Low risk",
-    riskLevel: "low" as const,
-    decision: "Bet" as const,
-  },
-  {
-    fixture: "Inter vs AC Milan",
-    market: "BTTS Yes",
-    modelProbability: "57.1%",
-    fairOdds: "1.75",
-    bestPrice: "1.74",
-    ev: "-0.6%",
-    riskLabel: "Derby volatility",
-    riskLevel: "high" as const,
-    decision: "No Bet" as const,
-  },
-];
+const modelRows = workspaceFixtures.map((row) => ({
+  fixture: row.fixture,
+  market: row.market,
+  modelProbability: row.modelProbability,
+  fairOdds: row.fairOdds,
+  bestPrice: row.bestPrice,
+  ev: row.ev,
+  riskLabel: row.riskFlags[0] ?? "Risk review",
+  riskLevel: row.decision === "No Bet" ? ("high" as const) : row.decision === "Watch" ? ("medium" as const) : ("low" as const),
+  decision: row.decision,
+}));
 
 export default function ModelPage() {
   return (
     <PageShell>
       <AnalyticsPageView page="/model" />
+
       <section className="marketing-hero">
-        <p className="section-label">Model framework</p>
-        <h1>How xGenie turns probability into a bet or no-bet decision.</h1>
+        <p className="section-label">Model notebook</p>
+        <h1>Model process shown like a working terminal notebook.</h1>
         <p>
-          Every market follows the same logic chain: model probability, fair odds, market comparison, EV test, minimum price
-          gate, risk flags, and a final decision status.
+          xGenie keeps the model workflow explicit: fixture inputs, probability, fair odds, market comparison, risk filter,
+          and final status. Sample data only.
         </p>
       </section>
 
-      <section className="marketing-section">
+      <RevealOnScroll>
+        <section className="marketing-section workspace-section">
         <SectionHeader
-          eyebrow="Process map"
-          title="Decision sequence"
-          description="Only markets passing all gates reach execution status."
+          eyebrow="Workflow"
+          title="From market price to decision"
+          description="Each stage logs rationale so users can review why a market becomes Qualified, Watch, or No Bet."
         />
+        <ModelWorkflowSteps />
+        </section>
+      </RevealOnScroll>
 
-        <div className="content-card-grid">
-          <article className="content-card">
-            <h3>1. Model probability</h3>
-            <p>Estimate event likelihood from team strength, chance creation profile, and contextual adjustments.</p>
-          </article>
-          <article className="content-card">
-            <h3>2. Fair odds</h3>
-            <p>Convert probability into fair odds to create a neutral valuation baseline for each market.</p>
-          </article>
-          <article className="content-card">
-            <h3>3. EV and minimum price</h3>
-            <p>Compare best available odds to fair value and reject prices that sit below execution thresholds.</p>
-          </article>
-          <article className="content-card">
-            <h3>4. Risk flags and decision</h3>
-            <p>Apply lineup, liquidity, and volatility flags before finalizing Bet or No Bet.</p>
-          </article>
-        </div>
-      </section>
+      <RevealOnScroll>
+        <section className="marketing-section model-grid-section">
+        <MatchIntelligencePanel selected={selectedWorkspaceFixture} />
+        <DecisionEnginePanel selected={selectedWorkspaceFixture} />
+        </section>
+      </RevealOnScroll>
 
-      <section className="marketing-section">
+      <RevealOnScroll>
+        <section className="marketing-section workspace-section">
         <SectionHeader
           eyebrow="Sample output"
-          title="Current qualification table"
-          description="Illustrative model output for upcoming fixtures."
+          title="Qualification table"
+          description="Sample model workspace - live outputs coming later."
         />
-        <MarketTable rows={processRows} />
-      </section>
-
-      <section className="marketing-section">
-        <SectionHeader
-          eyebrow="Decision cards"
-          title="Readable rationale for execution"
-          description="Each card captures thresholds, risk state, and final status."
-        />
-
-        <div className="decision-grid">
-          <ModelDecisionCard
-            fixture="Premier League · Sat 17:30"
-            market="Man City Win"
-            modelProbability="58.4%"
-            fairOdds="1.71"
-            bestPrice="1.82"
-            ev="+6.4%"
-            minimumPrice="1.78"
-            riskLabel="Lineups pending"
-            riskLevel="medium"
-            decision="Bet"
-            rationale="Edge remains above threshold after lineup uncertainty buffer."
-          />
-          <ModelDecisionCard
-            fixture="Serie A · Sun 19:45"
-            market="BTTS Yes"
-            modelProbability="57.1%"
-            fairOdds="1.75"
-            bestPrice="1.74"
-            ev="-0.6%"
-            minimumPrice="1.80"
-            riskLabel="Derby volatility"
-            riskLevel="high"
-            decision="No Bet"
-            rationale="Price and volatility fail execution policy despite acceptable baseline probability."
-          />
-        </div>
-      </section>
+        <MarketTable rows={modelRows} />
+        </section>
+      </RevealOnScroll>
     </PageShell>
   );
 }

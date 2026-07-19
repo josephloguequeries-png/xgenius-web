@@ -25,6 +25,8 @@ const sizes = {
 
 const imageSrc = "/brand/xgenie-primary-logo.png";
 
+const monochromeLogoFilter = "grayscale(1) brightness(1.4) contrast(1.1)";
+
 export function Logo({ size = "md", className = "", showMark = false }: LogoProps) {
   const dimensions = sizes[size];
 
@@ -73,6 +75,7 @@ export function LogoWordmark({
         width: width ?? dimensions.width,
         height: "auto",
         display: "block",
+        filter: monochromeLogoFilter,
       }}
     />
   );
@@ -98,6 +101,7 @@ export function LogoMark({
         width: size,
         height: "auto",
         display: "block",
+        filter: monochromeLogoFilter,
       }}
     />
   );
