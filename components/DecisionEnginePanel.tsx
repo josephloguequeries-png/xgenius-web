@@ -7,7 +7,7 @@ type DecisionEnginePanelProps = {
 
 export default function DecisionEnginePanel({ selected }: DecisionEnginePanelProps) {
   return (
-    <section className="workspace-panel" aria-label="xGenie copilot and decision engine panel">
+    <section className="workspace-panel workspace-panel-copilot" aria-label="xGenie copilot and decision engine panel">
       <header className="workspace-panel-header">
         <p className="panel-kicker">xGenie Copilot</p>
         <h3>Decision engine</h3>

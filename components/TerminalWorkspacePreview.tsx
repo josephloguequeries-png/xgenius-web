@@ -1,8 +1,9 @@
-import DecisionEnginePanel from "@/components/DecisionEnginePanel";
 import FixtureListPanel from "@/components/FixtureListPanel";
 import MatchIntelligencePanel from "@/components/MatchIntelligencePanel";
 import RevealOnScroll from "@/components/RevealOnScroll";
 import { selectedWorkspaceFixture, workspaceFixtures } from "@/lib/sample-model-data";
+
+const LANDING_FIXTURE_QUEUE_LIMIT = 6;
 
 export default function TerminalWorkspacePreview() {
   return (
@@ -14,13 +15,13 @@ export default function TerminalWorkspacePreview() {
 
       <div className="workspace-columns">
         <RevealOnScroll delay={0}>
-          <FixtureListPanel fixtures={workspaceFixtures} selectedFixture={selectedWorkspaceFixture.fixture} />
+          <FixtureListPanel
+            fixtures={workspaceFixtures.slice(0, LANDING_FIXTURE_QUEUE_LIMIT)}
+            selectedFixture={selectedWorkspaceFixture.fixture}
+          />
         </RevealOnScroll>
         <RevealOnScroll delay={80}>
           <MatchIntelligencePanel selected={selectedWorkspaceFixture} />
-        </RevealOnScroll>
-        <RevealOnScroll delay={160}>
-          <DecisionEnginePanel selected={selectedWorkspaceFixture} />
         </RevealOnScroll>
       </div>
     </section>
